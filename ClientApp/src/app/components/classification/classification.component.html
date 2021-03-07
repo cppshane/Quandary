@@ -1,0 +1,89 @@
+<canvas #mainCanvas id="main-canvas"></canvas>
+
+<div id="classification-container">
+  <div id="objects-list-container">
+    <div id="project-selector-container">
+      <div class="selector-container-outer">
+        <div class="selector-container-inner">
+          <a id="project-selector-content" href="#"><i class="fas fa-angle-down"></i><h4>Project 1</h4></a>
+          <div id="projects-list" class="selector-list list-2 list-light">
+            <a class="list-item-2 list-item-light" *ngFor="let project of projectService.projects" routerLink="{{ '/classification/' + project.Id }}"><p>{{ project.Title }}</p></a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <h3>My Objects</h3>
+    <div id="objects-list" class="list-2 list-dark" *ngIf="project">
+      <a class="list-item-2" *ngFor="let object of project.ClassificationObjects" (mouseover)="object.hover=true" (mouseleave)="object.hover=false" [ngStyle]="{background: object.hover ? object.Color : 'transparent'}"
+         routerLink="{{ '/classification/' + project.Id + '/' + object.Id}}"><p>{{ object.Title }}</p></a>
+    </div>
+    <a class="button-1 background-green" (click)="newObjectButtonClick()"><i class="fas fa-plus"></i><p>New Object</p></a>
+  </div>
+  <div id="no-selection-page-container" class="classification-page" *ngIf="noPage()">
+    <h3 id="no-selection-page-title">No Objected Selected</h3>
+  </div>
+  <div id="summary-page-container" class="classification-page" *ngIf="summaryPage() && object">
+    <div id="summary-page-title-container">
+      <div style="width: 0.3em; height: 2em; border-radius: 5px; align-self: center; margin-right: 1em; margin-left: 1em;" [ngStyle]="{'background': object.Color}"></div>
+      <input id="summary-page-title-input" type="text" class="input-1" [(ngModel)]="object.Title" autocomplete="off"/>
+      <a id="download-model-button" class="button-2 background-blue" (click)="newObjectButtonClick()"><i class="fas fa-download"></i><p>Download Model</p></a>
+    </div>
+    <div id="summary-page-content-container">
+      <div id="object-type-selector-container">
+        <div class="selector-container-outer">
+          <div class="selector-container-inner">
+            <a href="#"><i class="fas fa-angle-down"></i><h4>State Detection</h4></a>
+            <div id="object-type-list" class="selector-list list-2 list-light">
+              <a class="list-item-2 list-item-light"><p>State Detection</p></a>
+              <a class="list-item-2 list-item-light"><p>Bounding Box Detection</p></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="summary-page-controls-container">
+      <a class="button-2 background-purple summary-page-control" routerLink="{{ '/classification/' + project.Id + '/' + object.Id + '/collect-data' }}"><i class="fas fa-folder"></i><p>Collect Data</p></a>
+      <a class="button-2 background-purple summary-page-control" (click)="testModelButtonClick()"><i class="fas fa-play"></i><p>Test Model</p></a>
+      <div id="summary-page-controls-right">
+        <a class="button-2 background-green summary-page-control" (click)="trainModelButtonClick()"><i class="fas fa-brain"></i><p>Train Model</p></a>
+      </div>
+    </div>
+  </div>
+  <div id="collect-data-container" class="classification-page" *ngIf="collectDataPage()">
+    <div id="collect-data-preselect-container">
+      <div id="preselect-content">
+        <h3 id="collect-data-title">Collect Data</h3>
+        <div id="preselect-list" class="list-1 list-light">
+          <a class="list-item-1 list-item-light" [routerLink]="['/collect-data']" fragment="upload-images"><p>upload my own images</p></a>
+          <a class="list-item-1 list-item-light" [routerLink]="['/collect-data']" fragment="upload-video"><p>upload a video clip and extract images</p></a>
+          <a class="list-item-1 list-item-light" (click)="recordFromWebcamButtonClick()"><p>record from my webcam</p></a>
+          <a class="list-item-1 list-item-light" (click)="recordFromWindowButtonClick()"><p>record from another window or tab</p></a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="record-video-container" class="classification-page" *ngIf="recordVideoPage() || testModelPage()">
+    <video id="main-video" [srcObject]="videoStreamService.stream" autoplay></video>
+    <div id="video-controls-container">
+      <a class="button-2 background-purple record-page-control" (click)="recordingButtonClick()" [innerHTML]="recordingButtonInnerHTML()">
+      </a>
+    </div>
+  </div>
+  <div id="object-data-container" *ngIf="recordVideoPage() || collectDataPage() || summaryPage() || noPage()">
+    <h3>Object Data</h3>
+    <div *ngIf="object">
+      <img class="object-data-list-item" *ngFor="let data of object.Data" src="{{ data }}" (click)="objectDataListItemClick(data)" />
+    </div>
+  </div>
+  <div id="state-data-container" *ngIf="testModelPage()">
+    <h3>State Data</h3>
+    <div id="object-state-list">
+      <div class="object-state-list-item" *ngFor="let object of project.ClassificationObjects">
+        <div style="width: 0.3em; height: 2em; border-radius: 5px; align-self: center; margin-right: 1em; margin-left: 1em; position: absolute;" [ngStyle]="{'background': '#FFFFFF'}"></div>
+        <div style="width: 0.3em; border-radius: 5px; align-self: center; margin-right: 1em; margin-left: 1em; position: absolute;"
+             [ngStyle]="{'background': object.Color, 'height': (object.DetectionConfidence * 2).toString() + 'em', 'margin-top': (2 - object.DetectionConfidence * 2).toString() + 'em'}"></div>
+        <p>{{ object.Title }}</p>
+      </div>
+    </div>
+  </div>
+</div>

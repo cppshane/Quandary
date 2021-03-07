@@ -1,0 +1,27 @@
+<div id="nav-container">
+  <div id="nav-left-group">
+    <a [routerLink]="['/']">
+      <img src="../../../assets/img/logo-64.png" />
+    </a>
+  </div>
+  <div id="nav-center-group">
+    <a href="#">profile</a>
+    <div class="selector-container-outer">
+      <div class="selector-container-inner">  
+        <a href="#">tools</a>
+        <div class="selector-list list-1 list-light">
+          <a class="list-item-1 list-item-light" [routerLink]="['/classification']"><p>classification</p></a>
+          <a class="list-item-1 list-item-light" [routerLink]="['/intelligence']"><p>intelligence</p></a>
+        </div>
+      </div>
+    </div>
+    <a href="#">github</a>
+    <a href="#">discord</a>
+  </div>
+  <div id="nav-right-group">  
+    <a href="#">log in</a>
+    <a id="signup-link" href="#">
+      sign up
+    </a>
+  </div>
+</div>
